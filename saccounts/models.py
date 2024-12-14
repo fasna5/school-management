@@ -84,7 +84,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
-    username = None
+    username=None
     created_at = models.DateTimeField(auto_now_add=True)
     # Role-based fields
     is_student = models.BooleanField(default=False)
@@ -98,7 +98,7 @@ class CustomUser(AbstractUser):
 
 
     # Any other fields common to both roles
-    full_name = models.CharField(max_length=255)
+    
     address = models.CharField(max_length=30)
     landmark = models.CharField(max_length=255, blank=True, null=True)
     place = models.CharField(max_length=20,blank=True,null=True)
@@ -110,7 +110,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True, null=True, blank=True)
     phone_number = models.CharField(max_length=15, unique=True,validators=[phone_regex], null=True, blank=True)
     country_code = models.ForeignKey('Country_Codes', on_delete=models.SET_NULL, null=True, blank=True)
-
+    
     USERNAME_FIELD = 'email'  
     REQUIRED_FIELDS = []
 
@@ -144,3 +144,55 @@ class CustomUser(AbstractUser):
 
 
     objects = CustomUserManager()
+
+class Student(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='student',null=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    class_field=models.CharField(max_length=50, blank=True, null=True) 
+    division=models.CharField(max_length=50, blank=True, null=True) 
+    roll_number=models.IntegerField(max_length=15,blank=True,null=True)
+    profile_image=profile_image = models.ImageField(upload_to='d-profile-images/', null=True, blank=True, validators=[validate_file_size])  # Profile image field
+    id_number=models.CharField(max_length=50, blank=True, null=True)  # ID number field
+    about=models.TextField(null=True,blank=True)
+
+    
+
+class Staff(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='staff',null=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    # Define choices for the dropdown
+    CATEGORY_CHOICES = [
+        ('Physics', 'Physics'),
+        ('Chemistry', 'Chemistry'),
+        ('Biology', 'Biology'),
+        ('Maths', 'Maths'),
+    ]
+    subjects = models.CharField(
+        max_length=50,
+        choices=CATEGORY_CHOICES,  # Dropdown choices
+        default='Physics',     # Default category
+    )
+    profile_image=profile_image = models.ImageField(upload_to='s-profile-images/', null=True, blank=True, validators=[validate_file_size])  # Profile image field
+    id_number=models.CharField(max_length=50, blank=True, null=True)  # ID number field
+    about=models.TextField(null=True,blank=True)
+
+class Librarian(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='librarian', null=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    profile_image=profile_image = models.ImageField(upload_to='l-profile-images/', null=True, blank=True, validators=[validate_file_size])  # Profile image field
+    id_number=models.CharField(max_length=50, blank=True, null=True)  # ID number field
+    about=models.TextField(null=True,blank=True)
+
+class LibraryForm(models.Model):
+    student_id = models.ForeignKey(Student, on_delete=models.PROTECT)
+    book_name=models.CharField(max_length=255, blank=True, null=True)
+    borrow_date=models.DateField(null=True, blank=True)
+    return_date=models.DateField(null=True, blank=True)
+    status= models.CharField(max_length=10, choices=[('Active', 'Active'), ('Inactive', 'Inactive')])
+
+class FeesForm(models.Model):
+    student_id=models.ForeignKey(Student, on_delete=models.PROTECT)
+    fee_type=models.CharField(max_length=255, blank=True, null=True)
+    amount=models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date=models.DateField(null=True, blank=True)
+    remarks=models.TextField(null=True,blank=True)

@@ -1,0 +1,27 @@
+<!-- view_student_list.html -->
+
+<h1>Student Details</h1>
+
+{% if student %}
+    <h2>Student Information</h2>
+    <p><strong>First Name:</strong> {{ student.user.first_name }}</p>
+    <p><strong>Last Name:</strong> {{ student.user.last_name }}</p>
+    <p><strong>Email:</strong> {{ student.user.email }}</p>
+    <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
+    <p><strong>Class:</strong> {{ student.class_field }}</p>
+    <p><strong>Division:</strong> {{ student.division }}</p>
+    <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
+    <p><strong>Profile Image:</strong> <img src="{{ student.profile_image.url }}" alt="Profile Image"></p>
+    <p><strong>ID Number:</strong> {{ student.id_number }}</p>
+    <p><strong>About:</strong> {{ student.about }}</p>
+{% else %}
+    <p>No student details found for this user.</p>
+{% endif %}
+
+<h2>Custom User Information</h2>
+<p><strong>firstname:</strong> {{ user.firstname }}</p>
+<p><strong>Email:</strong> {{ user.email }}</p>
+<p><strong>Phone Number:</strong> {{ user.phone_number }}</p>
+<p><strong>Address:</strong> {{ user.address }}</p>
+<p><strong>Whatsapp:</strong> {{ user.watsapp }}</p>
+<p><strong>Role:</strong> {% if user.is_student %}Student{% else %}Not a student{% endif %}</p>
