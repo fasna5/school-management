@@ -1,10 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializer import AddStudentSerializer
+from .serializer import AddStudentSerializer,StudentSerializer
 from saccounts.models import CustomUser, Student
 from rest_framework.permissions import AllowAny
 from django.db import IntegrityError
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
 
 class AddStudentView(APIView):
     permission_classes = [AllowAny]
@@ -75,3 +77,53 @@ class AddStudentView(APIView):
                 return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        print(user)
+        try:
+            # Get the student object using the authenticated user
+            student = Student.objects.get(user=user)
+            serializer = StudentSerializer(student)
+            return Response(serializer.data)
+        except Student.DoesNotExist:
+            return Response({"error": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request):
+        try:
+            # Get the student object using the authenticated user
+            student = Student.objects.get(user=request.user)
+            serializer = StudentSerializer(student, data=request.data)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'status': 'Student updated successfully'}, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Student.DoesNotExist:
+            return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def patch(self, request):
+        try:
+            # Get the student object using the authenticated user
+            student = Student.objects.get(user=request.user)
+            serializer = StudentSerializer(student, data=request.data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'status': 'Student partially updated successfully'}, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Student.DoesNotExist:
+            return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request):
+        try:
+            # Get the student object using the authenticated user
+            student = Student.objects.get(user=request.user)
+            student.delete()
+            return Response({'status': 'Student deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except Student.DoesNotExist:
+            return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)

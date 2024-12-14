@@ -24,5 +24,39 @@ class AddStudentSerializer(serializers.Serializer):
     profile_image = serializers.ImageField(required = False)
     id_number=serializers.CharField(max_length=50)
     about = serializers.CharField(max_length = 255)
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = [
+            'id', 
+            'user', 
+            'date_of_birth', 
+            'class_field', 
+            'division', 
+            'roll_number', 
+            'profile_image', 
+            'id_number', 
+            'about'
+        ]
+        
+    def update(self, instance, validated_data):
+        """
+        This method is called for both PUT and PATCH requests.
+        It will update the existing instance with the validated data.
+        """
+        # Update fields if they are provided
+        instance.date_of_birth = validated_data.get('date_of_birth', instance.date_of_birth)
+        instance.class_field = validated_data.get('class_field', instance.class_field)
+        instance.division = validated_data.get('division', instance.division)
+        instance.roll_number = validated_data.get('roll_number', instance.roll_number)
+        instance.profile_image = validated_data.get('profile_image', instance.profile_image)
+        instance.id_number = validated_data.get('id_number', instance.id_number)
+        instance.about = validated_data.get('about', instance.about)
+        
+        instance.save()
+        return instance
+
     
     
