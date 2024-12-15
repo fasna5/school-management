@@ -80,14 +80,14 @@ class AddStudentView(APIView):
 
 
 class StudentView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # Protecting the view with authentication
 
     def get(self, request):
         user = request.user
-        print(user)
         try:
             # Get the student object using the authenticated user
             student = Student.objects.get(user=user)
+            # Serialize the student object along with the associated CustomUser data
             serializer = StudentSerializer(student)
             return Response(serializer.data)
         except Student.DoesNotExist:
@@ -121,9 +121,20 @@ class StudentView(APIView):
 
     def delete(self, request):
         try:
-            # Get the student object using the authenticated user
+        # Get the student object using the authenticated user
             student = Student.objects.get(user=request.user)
-            student.delete()
-            return Response({'status': 'Student deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+        # Delete the associated CustomUser object
+            user = student.user
+            student.delete()  # Delete the student object first (to avoid foreign key issues)
+
+        # Also delete the related CustomUser
+            user.delete()
+
+            return Response({'status': 'Student and associated user deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
         except Student.DoesNotExist:
             return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+        # Handle unexpected errors here
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

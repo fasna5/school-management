@@ -166,6 +166,7 @@ class Staff(models.Model):
         ('Chemistry', 'Chemistry'),
         ('Biology', 'Biology'),
         ('Maths', 'Maths'),
+        ('librarian','librarian')
     ]
     subjects = models.CharField(
         max_length=50,
@@ -176,12 +177,6 @@ class Staff(models.Model):
     id_number=models.CharField(max_length=50, blank=True, null=True)  # ID number field
     about=models.TextField(null=True,blank=True)
 
-class Librarian(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='librarian', null=True)
-    date_of_birth = models.DateField(null=True, blank=True)
-    profile_image=profile_image = models.ImageField(upload_to='l-profile-images/', null=True, blank=True, validators=[validate_file_size])  # Profile image field
-    id_number=models.CharField(max_length=50, blank=True, null=True)  # ID number field
-    about=models.TextField(null=True,blank=True)
 
 class LibraryForm(models.Model):
     student_id = models.ForeignKey(Student, on_delete=models.PROTECT)

@@ -4,7 +4,6 @@ from . models import *
 admin.site.register(CustomUser)
 admin.site.register(Student)
 admin.site.register(Staff)
-admin.site.register(Librarian)
 admin.site.register(LibraryForm)
 admin.site.register(FeesForm)
 admin.site.register(Country_Codes)
