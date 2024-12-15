@@ -95,7 +95,7 @@ class StudentView(APIView):
 
     def put(self, request):
         try:
-            # Get the student object using the authenticated user
+            
             student = Student.objects.get(user=request.user)
             serializer = StudentSerializer(student, data=request.data)
 
