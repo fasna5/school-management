@@ -154,6 +154,9 @@ class Student(models.Model):
     profile_image=profile_image = models.ImageField(upload_to='d-profile-images/', null=True, blank=True, validators=[validate_file_size])  # Profile image field
     id_number=models.CharField(max_length=50, blank=True, null=True)  # ID number field
     about=models.TextField(null=True,blank=True)
+    def __str__(self):
+        return self.id_number if self.id_number else "No ID Number"
+
 
     
 
@@ -179,14 +182,14 @@ class Staff(models.Model):
 
 
 class LibraryForm(models.Model):
-    student_id = models.ForeignKey(Student, on_delete=models.PROTECT)
+    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     book_name=models.CharField(max_length=255, blank=True, null=True)
     borrow_date=models.DateField(null=True, blank=True)
     return_date=models.DateField(null=True, blank=True)
     status= models.CharField(max_length=10, choices=[('Active', 'Active'), ('Inactive', 'Inactive')])
 
 class FeesForm(models.Model):
-    student_id=models.ForeignKey(Student, on_delete=models.PROTECT)
+    student_id=models.ForeignKey(Student, on_delete=models.CASCADE)
     fee_type=models.CharField(max_length=255, blank=True, null=True)
     amount=models.DecimalField(max_digits=10, decimal_places=2)
     payment_date=models.DateField(null=True, blank=True)
